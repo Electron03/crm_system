@@ -114,7 +114,7 @@ public class userControllers {
                 return stats;
             }
             @PutMapping("/updateMeetDate")
-            public String updateMeetDate1(@RequestParam Long id, @RequestParam String meetDate) {
+            public String updateMeetDate1(@RequestParam int id, @RequestParam String meetDate) {
                 boolean success = updateMeetDate(id, meetDate);
                 return success ? "Meet date updated successfully" : "Candidate not found";
             }
@@ -127,7 +127,7 @@ public class userControllers {
     dto.setDateNote(candidate.getDateNote());
     return dto;
     }
-    public boolean updateMeetDate(Long id, String meetDate) {
+    public boolean updateMeetDate(int id, String meetDate) {
         return candidateRepository.updateMeetDateById(meetDate, id) > 0;
     }
 

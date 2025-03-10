@@ -18,7 +18,7 @@ public interface CandidateRepository extends JpaRepository<Candidate,Integer>{
     @Transactional
 @Modifying
 @Query("UPDATE Candidate c SET c.meetDate = :meetDate WHERE c.id = :id")
-int updateMeetDateById(@Param("meetDate") String meetDate, @Param("id") Long id);
+int updateMeetDateById(@Param("meetDate") String meetDate, @Param("id") int id);
 
 
     List<Candidate> findByFullnameContainingIgnoreCase(String fullname);
