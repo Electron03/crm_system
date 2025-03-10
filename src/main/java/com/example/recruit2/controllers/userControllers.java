@@ -113,7 +113,7 @@ public class userControllers {
                 stats.put("offerReceived",getCandidatesWithOffer());
                 return stats;
             }
-            @PutMapping("/updateMeetDate")
+            @GetMapping("/updateMeetDate")
             public String updateMeetDate1(@RequestParam int id, @RequestParam String meetDate) {
                 boolean success = updateMeetDate(id, meetDate);
                 return success ? "Meet date updated successfully" : "Candidate not found";
