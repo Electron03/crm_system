@@ -10,7 +10,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -67,10 +69,11 @@ public class userControllers {
           return ResponseEntity.ok("");
       }
 
+      @CrossOrigin(origins = "*")
     @GetMapping("/getcandidats")
     public Page<Candidate> getcandidats(
             @RequestParam(defaultValue = "new") String sort,
-            Pageable pageable) {
+            @PageableDefault(sort = "dateRec", direction = Sort.Direction.DESC)  Pageable pageable) {
 
         Sort.Direction direction = sort.equalsIgnoreCase("new") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable sortedPageable = PageRequest.of(
@@ -78,11 +81,20 @@ public class userControllers {
             pageable.getPageSize(), 
             Sort.by(direction, "dateRec")
         );
-
         return candidateRepository.findAll(sortedPageable);
     }
-
-
+    @GetMapping("/searchcandidate")
+    public List<Candidate> searchCandidates(@RequestParam String query) {
+        if (query.startsWith("@")) {
+            String nameQuery = query.substring(1); // Убираем '@'
+            return candidateRepository.findByFullnameContainingIgnoreCase(nameQuery);
+        } else if (query.startsWith("$")) {
+            String vacancyQuery = query.substring(1); // Убираем '$'
+            return candidateRepository.findByVacancyContainingIgnoreCase(vacancyQuery);
+        } else {
+            return List.of(); // Если нет '@' или '$', возвращаем пустой список
+        }
+    }
         @GetMapping("/candidateslimited")
         public List<CandidateLimitedDTO> getLimitedCandidates() {
             List<Candidate> candidates = candidateRepository.findAll(); 
@@ -91,10 +103,7 @@ public class userControllers {
                 .collect(Collectors.toList());
                 }
      
- @GetMapping("/sortcandidate")
-    public List<Candidate> getCandidates(@RequestParam(required = false, defaultValue = "new") String sort) {
-        return getSortedCandidates(sort);
-    }
+
 @PutMapping("/updateMeetDate")
     public String updateMeetDate1(@RequestParam String fullname, @RequestParam String meetDate) {
         boolean success = updateMeetDate(fullname, meetDate);
@@ -112,10 +121,7 @@ public class userControllers {
         int updatedRows = candidateRepository.updateMeetDateByFullname(meetDate, fullname);
         return updatedRows > 0; // Возвращает true, если что-то обновилось
     }
-    public List<Candidate> getSortedCandidates(String sort) {
-        Sort.Direction direction = sort.equalsIgnoreCase("new") ? Sort.Direction.DESC : Sort.Direction.ASC;
-        return candidateRepository.findAll(Sort.by(direction, "dateRec"));
-    }
+
     //  @GetMapping("getcandidat")
     //  public ResponseEntity<Candidate> getcandidat(@RequestParam int param) {
     //      return ResponseEntity.ok(candidateRepository.getById(param));

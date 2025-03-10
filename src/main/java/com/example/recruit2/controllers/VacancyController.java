@@ -13,11 +13,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 
 
 @RestController
@@ -50,10 +52,11 @@ public class VacancyController {
             vacancyRepository.save(entity);    
             return ResponseEntity.ok("ok");
         }
+        @CrossOrigin(origins = "*")
        @GetMapping("/getvacancy")
             public Page<Vacancy> getVacancy(
                  @RequestParam(defaultValue = "new") String sort,
-                     Pageable pageable) {
+                       @PageableDefault(sort = "datePublish", direction = Sort.Direction.DESC) Pageable pageable) {
         
         Sort.Direction direction = sort.equalsIgnoreCase("new") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable sortedPageable = PageRequest.of(
@@ -63,6 +66,10 @@ public class VacancyController {
         );
 
         return vacancyRepository.findAll(sortedPageable);
+    }
+    @GetMapping("/findvacancy")
+    public List<Vacancy> findVacancies(@RequestParam String title) {
+        return vacancyRepository.findByVacancyTitleContainingIgnoreCase(title);
     }
         @PostMapping("/dellvacancy")
         public ResponseEntity<String> dellVacancy(@RequestBody Vacancy entity) {
@@ -76,18 +83,11 @@ public class VacancyController {
             .map(this::convertToLimitedDTO) // Преобразуем в DTO
             .collect(Collectors.toList());
             }
-        @GetMapping("/sortvacancies")
-        public List<Vacancy> getVacancies(@RequestParam(required = false, defaultValue = "new") String sort) {
-            return getSortedVacancies(sort);
-        }
+    
         public VacancyLimitedDTO convertToLimitedDTO(Vacancy vacancy) {
             VacancyLimitedDTO dto = new VacancyLimitedDTO();
             dto.setVacancyTitle(vacancy.getVacancyTitle());
             return dto;
-        }
-        public List<Vacancy> getSortedVacancies(String sort) {
-            Sort.Direction direction = sort.equalsIgnoreCase("new") ? Sort.Direction.DESC : Sort.Direction.ASC;
-            return vacancyRepository.findAll(Sort.by(direction, "datePublish"));
         }
 
 }

@@ -41,9 +41,8 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/login").permitAll()
-                .requestMatchers("/register").permitAll()
-                .requestMatchers("/download").permitAll()
-                .requestMatchers("/vacancies").permitAll()
+                .requestMatchers("/register"+"/vacancies").permitAll()
+
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider()) // Используем бин напрямую

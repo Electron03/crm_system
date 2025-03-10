@@ -8,6 +8,7 @@ import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.canvas.draw.SolidLine;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.*;
+import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.io.font.PdfEncodings;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
@@ -38,7 +39,7 @@ public class PdfGeneratorService {
         try (InputStream is = new ClassPathResource("static/logo.png").getInputStream()) {
             ImageData imageData = ImageDataFactory.create(is.readAllBytes());
             Image logo = new Image(imageData).setWidth(120).setHeight(50);
-            document.add(logo);
+            document.add(logo.setHorizontalAlignment(HorizontalAlignment.RIGHT));
         }
         
         // Разделитель
@@ -49,17 +50,22 @@ public class PdfGeneratorService {
         PdfFontFactory.EmbeddingStrategy.FORCE_EMBEDDED);
 
         // Заголовок
-        document.add(new Paragraph(new Text("ОФФЕР\n").setFont(font).setFontSize(14)));
+        document.add(new Paragraph(new Text("ОФФЕР\n").setFont(font).setFontSize(14).setHorizontalAlignment(HorizontalAlignment.CENTER)));
 
         // Данные оффера (вставляем данные пользователя)
-        document.add(new Paragraph(new Text("ФИО: " + request.getFullName()+"\n").setFont(font).setFontSize(14)));
+        document.add(new Paragraph(new Text("ФИО: " + request.getFullName()+",\n").setFont(font).setFontSize(14)));
+        document.add(new Paragraph(new Text("рады сделать предложение о работе в нашей компании на следующих условиях.\n").setFont(font).setFontSize(14)));
         document.add(new Paragraph(new Text("Должность: " + request.getPosition()+"\n").setFont(font).setFontSize(14)));
         document.add(new Paragraph(new Text("Дата выхода: " + request.getStartDate()+"\n").setFont(font).setFontSize(14)));
         document.add(new Paragraph(new Text("Оклад: " + request.getSalary()+"\n").setFont(font).setFontSize(14)));
         document.add(new Paragraph(new Text("Испытательный срок: " + request.getProbationPeriod()+"\n").setFont(font).setFontSize(14)));
         document.add(new Paragraph(new Text("Функциональные обязанности: " + request.getResponsibilities()+"\n").setFont(font).setFontSize(14)));
         document.add(new Paragraph(new Text("Бонусы и условия работы: " + request.getBenefits()+"\n").setFont(font).setFontSize(14)));
-       
+        document.add(new Paragraph(new Text("\n")));
+        document.add(new Paragraph(new Text("\n")));
+        document.add(new Paragraph(new Text("Руководитель Службы управления персоналом и канцелярии  \n")).setFont(font).setFontSize(14));
+        document.add(new Paragraph(new Text("Репецкая Е.Ю.\n").setFont(font).setFontSize(14)));
+        
         document.close();
         return byteArrayOutputStream.toByteArray();
     }
