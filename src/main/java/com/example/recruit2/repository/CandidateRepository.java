@@ -1,5 +1,7 @@
 package com.example.recruit2.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +19,7 @@ public interface CandidateRepository extends JpaRepository<Candidate,Integer>{
     @Modifying
     @Query("UPDATE Candidate c SET c.meetDate = :meetDate WHERE c.fullname = :fullname")
     int updateMeetDateByFullname(@Param("meetDate") String meetDate, @Param("fullname") String fullname);
+
+    List<Candidate> findByFullnameContainingIgnoreCase(String fullname);
+    List<Candidate> findByVacancyContainingIgnoreCase(String vacancy);
 }
