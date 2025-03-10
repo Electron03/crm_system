@@ -15,10 +15,11 @@ import jakarta.transaction.Transactional;
 
 public interface CandidateRepository extends JpaRepository<Candidate,Integer>{
     Page<Candidate> findAll(Pageable pageable);
-     @Transactional
-    @Modifying
-    @Query("UPDATE Candidate c SET c.meetDate = :meetDate WHERE c.fullname = :fullname")
-    int updateMeetDateByFullname(@Param("meetDate") String meetDate, @Param("fullname") String fullname);
+    @Transactional
+@Modifying
+@Query("UPDATE Candidate c SET c.meetDate = :meetDate WHERE c.id = :id")
+int updateMeetDateById(@Param("meetDate") String meetDate, @Param("id") Long id);
+
 
     List<Candidate> findByFullnameContainingIgnoreCase(String fullname);
     List<Candidate> findByVacancyContainingIgnoreCase(String vacancy);

@@ -105,30 +105,30 @@ public class userControllers {
                 .collect(Collectors.toList());
                 }
      
-@GetMapping("/stats")
-    public Map<String, Long> getCandidateStats() {
-        Map<String, Long> stats = new HashMap<>();
-        stats.put("total", getTotalCandidates());
-        stats.put("onInterview",getCandidatesOnInterview());
-        stats.put("offerReceived",getCandidatesWithOffer());
-        return stats;
-    }
-@PutMapping("/updateMeetDate")
-    public String updateMeetDate1(@RequestParam String fullname, @RequestParam String meetDate) {
-        boolean success = updateMeetDate(fullname, meetDate);
-        return success ? "Meet date updated successfully" : "Candidate not found";
-    }
+        @GetMapping("/stats")
+            public Map<String, Long> getCandidateStats() {
+                Map<String, Long> stats = new HashMap<>();
+                stats.put("total", getTotalCandidates());
+                stats.put("onInterview",getCandidatesOnInterview());
+                stats.put("offerReceived",getCandidatesWithOffer());
+                return stats;
+            }
+            @PutMapping("/updateMeetDate")
+            public String updateMeetDate1(@RequestParam Long id, @RequestParam String meetDate) {
+                boolean success = updateMeetDate(id, meetDate);
+                return success ? "Meet date updated successfully" : "Candidate not found";
+            }
 
     public CandidateLimitedDTO convertToLimitedDTO(Candidate candidate) {
     CandidateLimitedDTO dto = new CandidateLimitedDTO();
+    dto.setId(candidate.getId());
     dto.setFullname(candidate.getFullname());
     dto.setMeetdate(candidate.getMeetDate());
     dto.setDateNote(candidate.getDateNote());
     return dto;
     }
-  public boolean updateMeetDate(String fullname, String meetDate) {
-        int updatedRows = candidateRepository.updateMeetDateByFullname(meetDate, fullname);
-        return updatedRows > 0; // Возвращает true, если что-то обновилось
+    public boolean updateMeetDate(Long id, String meetDate) {
+        return candidateRepository.updateMeetDateById(meetDate, id) > 0;
     }
 
 

@@ -1,11 +1,21 @@
 package com.example.recruit2.DTO;
 
 public class CandidateLimitedDTO {
+    private int id;
     private String fullname;
     private String meetdate;
     private String dateNote;
 
     // Геттеры и сеттеры
+
+    public int getId() {
+        return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getFullname() {
         return fullname;
     }
