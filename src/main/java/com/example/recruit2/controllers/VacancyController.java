@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
@@ -49,11 +50,20 @@ public class VacancyController {
             vacancyRepository.save(entity);    
             return ResponseEntity.ok("ok");
         }
-        @GetMapping("/getvacancy")
-        public Page<Vacancy>getVacancy(Pageable pageable) {
-            return vacancyRepository.findAll(pageable);
-        }
+       @GetMapping("/getvacancy")
+            public Page<Vacancy> getVacancy(
+                 @RequestParam(defaultValue = "new") String sort,
+                     Pageable pageable) {
         
+        Sort.Direction direction = sort.equalsIgnoreCase("new") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable sortedPageable = PageRequest.of(
+            pageable.getPageNumber(), 
+            pageable.getPageSize(), 
+            Sort.by(direction, "datePublish")
+        );
+
+        return vacancyRepository.findAll(sortedPageable);
+    }
         @PostMapping("/dellvacancy")
         public ResponseEntity<String> dellVacancy(@RequestBody Vacancy entity) {
             vacancyRepository.delete(entity);

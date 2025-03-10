@@ -7,11 +7,15 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.recruit2.DTO.CandidateDTO;
 import com.example.recruit2.DTO.CandidateLimitedDTO;
@@ -27,7 +31,6 @@ public class userControllers {
     @Autowired
     private CandidateRepository candidateRepository;
 
-    
     public userControllers(CandidateRepository candidateRepository) {
         this.candidateRepository = candidateRepository;
     }
@@ -64,10 +67,21 @@ public class userControllers {
           return ResponseEntity.ok("");
       }
 
-     @GetMapping("getcandidats")
-     public Page<Candidate> getcandidats(Pageable pageable) {
-        return candidateRepository.findAll(pageable);
-     }
+    @GetMapping("/getcandidats")
+    public Page<Candidate> getcandidats(
+            @RequestParam(defaultValue = "new") String sort,
+            Pageable pageable) {
+
+        Sort.Direction direction = sort.equalsIgnoreCase("new") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable sortedPageable = PageRequest.of(
+            pageable.getPageNumber(), 
+            pageable.getPageSize(), 
+            Sort.by(direction, "dateRec")
+        );
+
+        return candidateRepository.findAll(sortedPageable);
+    }
+
 
         @GetMapping("/candidateslimited")
         public List<CandidateLimitedDTO> getLimitedCandidates() {
@@ -77,14 +91,31 @@ public class userControllers {
                 .collect(Collectors.toList());
                 }
      
+ @GetMapping("/sortcandidate")
+    public List<Candidate> getCandidates(@RequestParam(required = false, defaultValue = "new") String sort) {
+        return getSortedCandidates(sort);
+    }
+@PutMapping("/updateMeetDate")
+    public String updateMeetDate1(@RequestParam String fullname, @RequestParam String meetDate) {
+        boolean success = updateMeetDate(fullname, meetDate);
+        return success ? "Meet date updated successfully" : "Candidate not found";
+    }
 
-     public CandidateLimitedDTO convertToLimitedDTO(Candidate candidate) {
+    public CandidateLimitedDTO convertToLimitedDTO(Candidate candidate) {
     CandidateLimitedDTO dto = new CandidateLimitedDTO();
     dto.setFullname(candidate.getFullname());
     dto.setMeetdate(candidate.getMeetDate());
     dto.setDateNote(candidate.getDateNote());
     return dto;
-}
+    }
+  public boolean updateMeetDate(String fullname, String meetDate) {
+        int updatedRows = candidateRepository.updateMeetDateByFullname(meetDate, fullname);
+        return updatedRows > 0; // Возвращает true, если что-то обновилось
+    }
+    public List<Candidate> getSortedCandidates(String sort) {
+        Sort.Direction direction = sort.equalsIgnoreCase("new") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        return candidateRepository.findAll(Sort.by(direction, "dateRec"));
+    }
     //  @GetMapping("getcandidat")
     //  public ResponseEntity<Candidate> getcandidat(@RequestParam int param) {
     //      return ResponseEntity.ok(candidateRepository.getById(param));
