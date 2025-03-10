@@ -22,4 +22,13 @@ public interface CandidateRepository extends JpaRepository<Candidate,Integer>{
 
     List<Candidate> findByFullnameContainingIgnoreCase(String fullname);
     List<Candidate> findByVacancyContainingIgnoreCase(String vacancy);
+    // Общее количество кандидатов
+    long count();
+
+    // Количество кандидатов со статусом "На собесе"
+    long countByStatus(String status);
+
+    // Количество кандидатов со статусом "Получен оффер"
+    @Query("SELECT COUNT(c) FROM Candidate c WHERE c.status = 'Получен оффер'")
+    long countOfferReceived();
 }

@@ -2,7 +2,9 @@ package com.example.recruit2.controllers;
 
 import jakarta.validation.Valid;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,7 +105,14 @@ public class userControllers {
                 .collect(Collectors.toList());
                 }
      
-
+@GetMapping("/stats")
+    public Map<String, Long> getCandidateStats() {
+        Map<String, Long> stats = new HashMap<>();
+        stats.put("total", getTotalCandidates());
+        stats.put("onInterview",getCandidatesOnInterview());
+        stats.put("offerReceived",getCandidatesWithOffer());
+        return stats;
+    }
 @PutMapping("/updateMeetDate")
     public String updateMeetDate1(@RequestParam String fullname, @RequestParam String meetDate) {
         boolean success = updateMeetDate(fullname, meetDate);
@@ -122,10 +131,26 @@ public class userControllers {
         return updatedRows > 0; // Возвращает true, если что-то обновилось
     }
 
+
     //  @GetMapping("getcandidat")
     //  public ResponseEntity<Candidate> getcandidat(@RequestParam int param) {
     //      return ResponseEntity.ok(candidateRepository.getById(param));
     //  }
 
      
+
+
+
+
+    public long getTotalCandidates() {
+        return candidateRepository.count();
+    }
+
+    public long getCandidatesOnInterview() {
+        return candidateRepository.countByStatus("На собесе");
+    }
+
+    public long getCandidatesWithOffer() {
+        return candidateRepository.countOfferReceived();
+    }
 }
